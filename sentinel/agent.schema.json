@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/takedelight/json-schemas/main/sentinel/agent.schema.json",
+  "title": "Sentinel Agent Configuration",
+  "description": "Configuration file for Sentinel monitoring agent (~/.config/sentinel/config.json)",
+  "type": "object",
+  "required": ["api_key"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URL or path to JSON Schema"
+    },
+    "api_key": {
+      "type": "string",
+      "minLength": 10,
+      "description": "API key generated in the Sentinel dashboard"
+    },
+    "interval": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3600,
+      "default": 5,
+      "description": "Metrics collection interval in seconds"
+    },
+    "metrics": {
+      "type": "array",
+      "description": "List of metrics to collect",
+      "uniqueItems": true,
+      "minItems": 1,
+      "default": ["cpu", "memory", "disk", "network", "processes"],
+      "items": {
+        "type": "string",
+        "enum": ["cpu", "memory", "disk", "network", "processes"]
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "description": "Batching and retry settings for sending metrics to the API",
+      "additionalProperties": false,
+      "default": {
+        "batch_interval": 15,
+        "max_batch_size": 50,
+        "retry_count": 3,
+        "retry_delay": 2
+      },
+      "properties": {
+        "batch_interval": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "default": 15,
+          "description": "Maximum interval in seconds before flushing queued metrics"
+        },
+        "max_batch_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 50,
+          "description": "Maximum number of metric snapshots per single batch request"
+        },
+        "retry_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 3,
+          "description": "Number of retry attempts on failed API requests (0 disables retries)"
+        },
+        "retry_delay": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "default": 2,
+          "description": "Base delay in seconds between retry attempts"
+        }
+      }
+    }
+  }
+}
